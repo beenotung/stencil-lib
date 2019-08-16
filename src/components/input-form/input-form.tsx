@@ -151,9 +151,9 @@ export const InputItem = <T, >(props: {
 
   return component.render();
 };
-export const InputForm = <T, >(
+export const InputList = <T, >(
   props: {
-    items: Array<'br' | InputItemType<T>>,
+    items: Array<'br' | InputItemType<T> | d.VNode | (d.VNode[])>,
     triggerRender: () => void,
   },
 ) => {
@@ -163,8 +163,21 @@ export const InputForm = <T, >(
         if (item === 'br') {
           return <div/>;
         }
-        return <InputItem item={item} triggerRender={props.triggerRender}/>;
+        if (Array.isArray(item)) {
+          return item as d.VNode[];
+        }
+        const inputItem = item as InputItemType<T>;
+        if (typeof inputItem !== 'object') {
+          // maybe string?
+          return item;
+        }
+        if (inputItem.valueObject === undefined) {
+          return item as d.VNode;
+        }
+        return <InputItem item={inputItem} triggerRender={props.triggerRender}/>;
       })}
     </ion-list>
   );
 };
+/**@deprecated*/
+export const InputForm = InputList;

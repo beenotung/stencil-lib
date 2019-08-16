@@ -1,3 +1,5 @@
+import * as d from '@stencil/core/dist/declarations';
+
 export type OptionType<T = never> = { text: string; value: T };
 
 export type InputType<T> =
@@ -27,11 +29,22 @@ export type InputItem<T, K extends keyof T = keyof T> = InputItemPart<T, K> & {
 
 export function makeInputItems<T>(
   valueObject: T,
-  items: Array<'br' | InputItemPart<T>>,
-): Array<'br' | InputItem<T>> {
+  items: Array<'br' | InputItemPart<T> | d.VNode | (d.VNode[])>,
+): Array<'br' | InputItem<T> | d.VNode | (d.VNode[])> {
   return items.map(item => {
     if (item === 'br') {
       return item;
+    }
+    if (Array.isArray(item)) {
+      return item as d.VNode[];
+    }
+    const itemPart = item as InputItemPart<T>;
+    if (
+      typeof itemPart !== 'object' ||
+      itemPart.label === undefined ||
+      itemPart.key === undefined
+    ) {
+      return item as d.VNode;
     }
     return {
       ...item,
