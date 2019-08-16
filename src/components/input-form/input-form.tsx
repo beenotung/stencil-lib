@@ -1,17 +1,15 @@
 import { remove } from '@beenotung/tslib/array';
 import { h } from '@stencil/core';
 import * as d from '@stencil/core/dist/declarations';
-import { getUpdateValue, InputItem, OptionType } from './helper';
+import { getUpdateValue, InputItem as InputItemType, OptionType } from './helper';
 
-export const InputForm = <T, >(
-  props: {
-    items: Array<'br' | InputItem<T>>,
-    triggerRender: () => void,
-  },
-) => {
+export const InputItem = <T, >(props: {
+  item: InputItemType<T>,
+  triggerRender: () => void,
+}) => {
   const component = {
 
-    updateItem(item: InputItem<T>, event: Event, value?: any) {
+    updateItem(item: InputItemType<T>, event: Event, value?: any) {
       // check if value is given
       const type = item.type || 'text';
       if (arguments.length !== 3) {
@@ -50,7 +48,7 @@ export const InputForm = <T, >(
 
     /**@deprecated use ion-select with multiple attr instead */
     renderCheckboxGroup(
-      item: InputItem<T> & {
+      item: InputItemType<T> & {
         type: { type: 'select'; options: Array<OptionType<T>>; multiple: true };
       },
     ) {
@@ -74,7 +72,7 @@ export const InputForm = <T, >(
       );
     },
 
-    renderInputItem(item: InputItem<T>) {
+    renderInputItem(item: InputItemType<T>) {
       const label = item.label;
       const type = item.type || 'text';
       switch (type) {
@@ -147,17 +145,26 @@ export const InputForm = <T, >(
     },
 
     render() {
-      return (
-        <ion-list>
-          {props.items.map(item => {
-            if (item === 'br') {
-              return <div/>;
-            }
-            return component.renderInputItem(item);
-          })}
-        </ion-list>
-      );
+      return component.renderInputItem(props.item);
     },
   };
+
   return component.render();
+};
+export const InputForm = <T, >(
+  props: {
+    items: Array<'br' | InputItemType<T>>,
+    triggerRender: () => void,
+  },
+) => {
+  return (
+    <ion-list>
+      {props.items.map(item => {
+        if (item === 'br') {
+          return <div/>;
+        }
+        return <InputItem item={item} triggerRender={props.triggerRender}/>;
+      })}
+    </ion-list>
+  );
 };
