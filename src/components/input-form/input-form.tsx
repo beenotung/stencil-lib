@@ -1,4 +1,3 @@
-import { remove } from '@beenotung/tslib/array';
 import { h } from '@stencil/core';
 import * as d from '@stencil/core/dist/declarations';
 import { getUpdateValue, InputItem as InputItemType, OptionType } from './helper';
@@ -11,7 +10,6 @@ export const InputItem = <T, >(props: {
 
     updateItem(item: InputItemType<T>, event: Event, value?: any) {
       // check if value is given
-      const type = item.type || 'text';
       if (arguments.length !== 3) {
         // no value
         if (!event.target) {
@@ -24,16 +22,7 @@ export const InputItem = <T, >(props: {
         requestAnimationFrame(() => props.triggerRender());
         return;
       }
-      if (typeof type !== 'string' && type.type === 'select' && type.multiple) {
-        const values: any[] = item.valueObject[item.key] as any;
-        if (values.includes(value)) {
-          remove(values, value);
-        } else {
-          values.push(value);
-        }
-      } else {
-        item.valueObject[item.key] = value;
-      }
+      item.valueObject[item.key] = value;
       props.triggerRender();
     },
 
