@@ -11,7 +11,9 @@ export const IonPage = (
     ionContentNoPadding?: boolean;
     ionContentClass?: string;
     showBackButton?: boolean;
-    menu?: boolean
+    menu?: boolean;
+    toolbarEndButtons?: d.VNode | d.VNode[];
+    hidden?: boolean;
   },
   children: d.VNode[],
 ) => {
@@ -28,26 +30,35 @@ export const IonPage = (
     showBackButton = false;
   }
   return [
-    <ion-header>
+    <ion-header hidden={props.hidden}>
       <ion-toolbar color='primary'>
         <ion-buttons slot='start'>
-          {!menu ? [] :
+          {!menu ? (
+            []
+          ) : (
             <ion-menu-toggle>
               <ion-button>
                 <ion-icon name='menu'/>
               </ion-button>
             </ion-menu-toggle>
-          }
-          {!showBackButton ? [] :
+          )}
+          {!showBackButton ? (
+            []
+          ) : (
             <ion-button onClick={() => window.history.back()}>
               <ion-icon name='arrow-back'/>
             </ion-button>
-          }
+          )}
         </ion-buttons>
         <ion-title>{props.title}</ion-title>
+        {!props.toolbarEndButtons ? (
+          []
+        ) : (
+          <ion-buttons slot='end'>{props.toolbarEndButtons}</ion-buttons>
+        )}
       </ion-toolbar>
     </ion-header>,
-    <ion-content class={ionContentClass}>
+    <ion-content class={ionContentClass} hidden={props.hidden}>
       {children}
       {/* this margin is only for desktop */}
       <div style={{ margin: '1rem' }}/>
