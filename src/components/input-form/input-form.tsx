@@ -130,7 +130,10 @@ export const InputItem = <T, >(props: {
         );
       }
       if (type.type === 'radio') {
-        return <ion-radio-group>
+        return <ion-radio-group
+          value={item.valueObject[item.key]}
+          onIonChange={(event) => component.updateItem(item, event)}
+        >
           <ion-list-header>
             <ion-label>{label}</ion-label>
           </ion-list-header>
