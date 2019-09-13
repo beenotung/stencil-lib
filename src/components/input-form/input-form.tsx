@@ -129,6 +129,17 @@ export const InputItem = <T, >(props: {
           </ion-select>,
         );
       }
+      if (type.type === 'radio') {
+        return <ion-radio-group>
+          <ion-list-header>
+            <ion-label>{label}</ion-label>
+          </ion-list-header>
+          {type.options.map(option => <ion-item>
+            <ion-label>{option.text}</ion-label>
+            <ion-radio slot='start' value={option.value}/>
+          </ion-item>)}
+        </ion-radio-group>;
+      }
       console.error('unknown type:', type);
       return [];
     },

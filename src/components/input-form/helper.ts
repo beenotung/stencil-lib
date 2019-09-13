@@ -8,7 +8,8 @@ export type InputType<T> =
   | 'number'
   | 'date'
   | 'email'
-  | { type: 'select'; options: Array<OptionType<T>>; multiple?: boolean };
+  | { type: 'select'; options: Array<OptionType<T>>; multiple?: boolean }
+  | { type: 'radio'; options: Array<OptionType<T>> };
 
 export type InputItemPart<T, K extends keyof T = keyof T> = {
   label: string;
@@ -74,7 +75,7 @@ export function getUpdateValue<T>(
       return target.value as any;
     default:
       // enum options, use radio or checkbox
-      if (!!type && type.type === 'select') {
+      if (!!type && (type.type === 'select' || type.type === 'radio')) {
         return target.value as any;
       }
       console.error('unknown type:', type);
