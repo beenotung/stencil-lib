@@ -1,21 +1,23 @@
 import { h } from '@stencil/core';
-import * as d from '@stencil/core/dist/declarations';
+import { ChildType, VNode } from '@stencil/core/dist/declarations';
 
 export const IonPageDefaultProp = {
   menu: false,
   showBackButton: false,
 };
-export const IonPage = (
+export const IonicPage = (
   props: {
-    title: string;
+    title: ChildType;
     ionContentNoPadding?: boolean;
     ionContentClass?: string;
     showBackButton?: boolean;
+    onBack?: () => void;
     menu?: boolean;
-    toolbarEndButtons?: d.VNode | d.VNode[];
+    toolbarEndButtons?: VNode | VNode[];
     hidden?: boolean;
+    secondToolbar?: VNode | VNode[];
   },
-  children: d.VNode[],
+  children: VNode[],
 ) => {
   let ionContentClass = props.ionContentClass || '';
   if (!props.ionContentNoPadding) {
@@ -29,6 +31,11 @@ export const IonPage = (
   if (props.showBackButton === false) {
     showBackButton = false;
   }
+  const onBack =
+    props.onBack ||
+    (() => {
+      history.back();
+    });
   return [
     <ion-header hidden={props.hidden}>
       <ion-toolbar color='primary'>
@@ -45,18 +52,23 @@ export const IonPage = (
           {!showBackButton ? (
             []
           ) : (
-            <ion-button onClick={() => window.history.back()}>
+            <ion-button onClick={onBack}>
               <ion-icon name='arrow-back'/>
             </ion-button>
           )}
         </ion-buttons>
-        <ion-title>{props.title}</ion-title>
+        {typeof props.title === 'string' ? (
+          <ion-title>{props.title}</ion-title>
+        ) : (
+          props.title
+        )}
         {!props.toolbarEndButtons ? (
           []
         ) : (
           <ion-buttons slot='end'>{props.toolbarEndButtons}</ion-buttons>
         )}
       </ion-toolbar>
+      {props.secondToolbar}
     </ion-header>,
     <ion-content class={ionContentClass} hidden={props.hidden}>
       {children}
