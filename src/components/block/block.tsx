@@ -1,3 +1,3 @@
-import * as d from '@stencil/core/dist/declarations';
+import { ChildrenType } from '../../helper-types';
 
-export const Block = (_props: {}, children: d.VNode[]) => children;
+export const Block = (_props: {}, children: ChildrenType) => children;
