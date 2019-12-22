@@ -30,8 +30,8 @@ export type InputItem<T, K extends keyof T = keyof T> = InputItemPart<T, K> & {
 
 export function makeInputItems<T>(
   valueObject: T,
-  items: Array<'br' | InputItemPart<T> | d.VNode | (d.VNode[])>,
-): Array<'br' | InputItem<T> | d.VNode | (d.VNode[])> {
+  items: Array<'br' | InputItemPart<T> | d.VNode | d.VNode[]>,
+): Array<'br' | InputItem<T> | d.VNode | d.VNode[]> {
   return items.map(item => {
     if (item === 'br') {
       return item;
