@@ -2,13 +2,33 @@ import * as d from '@stencil/core/dist/declarations';
 
 export type OptionType<T = never> = { text: string; value: T };
 
+/**
+ * value: format
+ *    date: YYYY-MM-DD
+ *    time: HH:MM
+ *    datetime: Date.toString() (with timezone info)
+ *    number: number
+ *    other: string
+ * */
 export type InputType<T> =
-  | 'text'
-  | 'textarea'
-  | 'number'
+  // ion-input
+  // type list see: https://ionicframework.com/docs/api/input
   | 'date'
   | 'email'
+  | 'number'
+  | 'password'
+  | 'search'
+  | 'tel'
+  | 'text'
+  | 'time'
+  | 'url'
+  // ion-datetime
+  | 'datetime'
+  // ion-textarea
+  | 'textarea'
+  // ion-select
   | { type: 'select'; options: Array<OptionType<T>>; multiple?: boolean }
+  // ion-radio-group
   | { type: 'radio'; options: Array<OptionType<T>> };
 
 export type InputItemPart<T, K extends keyof T = keyof T> = {
@@ -62,22 +82,36 @@ export function getUpdateValue<T>(
     return;
   }
   const target = event.target as HTMLInputElement;
+  const value = target.value;
   switch (type) {
-    case 'number':
-      return target.valueAsNumber as any;
     case 'date':
-      console.log('date value:', target.valueAsDate);
-      break;
-    case 'text':
+      // YYYY-MM-DD
+      return value as any;
+    case 'time':
+      // HH:MM
+      return value as any;
+    case 'datetime':
+      return new Date(value).getTime() as any;
+    case 'number':
+      return (value ? +value : undefined) as any;
     case 'email':
+    case 'text':
     case 'textarea':
-    case undefined:
-      return target.value as any;
+    case 'search':
+    case 'tel':
+    case 'url':
+    case 'password':
+      return value as any;
     default:
       // enum options, use radio or checkbox
-      if (!!type && (type.type === 'select' || type.type === 'radio')) {
-        return target.value as any;
+      if (type && (type.type === 'select' || type.type === 'radio')) {
+        return value as any;
       }
-      console.error('unknown type:', type);
+      if (type === undefined) {
+        return undefined;
+      }
+      const x: never = type;
+      console.error('unknown type:', x);
+      return undefined;
   }
 }
