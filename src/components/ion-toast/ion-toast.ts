@@ -1,4 +1,4 @@
-import { ToastOptions } from '@ionic/core';
+import { toastController, ToastOptions } from '@ionic/core';
 
 export async function showToast(options: ToastOptions) {
   options = {
@@ -7,17 +7,11 @@ export async function showToast(options: ToastOptions) {
     animated: true,
     ...options,
   };
-  let toastController = document.querySelector('ion-toast-controller');
-  if (!toastController) {
-    toastController = document.createElement('ion-toast-controller');
-    document.body.appendChild(toastController);
-  }
-  if (!toastController.componentOnReady) {
+  try {
+    const toast = await toastController.create(options);
+    toast.present();
+  } catch (e) {
     console.error('toast web component is not supported');
     alert(options.message);
-    return;
   }
-  await toastController.componentOnReady();
-  const toast = await toastController.create(options);
-  toast.present();
 }

@@ -1,6 +1,6 @@
 {
   "name": "stencil-lib",
-  "version": "0.5.0",
+  "version": "0.6.1",
   "description": "Utility Library when using Stencil with Ionic core for PWA",
   "keywords": [],
   "author": "Beeno Tung <aabbcc1241@yahoo.com.hk> (https://beeno-tung.surge.sh)",
@@ -8,15 +8,13 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "npm run rawtest",
-    "clean": "rimraf node_modules/@beenotung/tslib/index.* dist",
+    "clean": "rimraf dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "postformat": "tslint -p . --fix",
     "prebuild": "npm run clean",
     "build": "tsc",
     "postbuild": "node mk-package.js > dist/package.json",
-    "pretest": "npm run format && npm run build",
-    "rawtest": "ts-node test/index.ts",
+    "test": "npm run format && npm run build",
     "prepublishOnly": "npm run rawtest && npm run build"
   },
   "husky": {
@@ -24,12 +22,7 @@
       "pre-commit": "npm run format"
     }
   },
-  "directories": {
-    "test": "test"
-  },
-  "dependencies": {
-    "@beenotung/tslib": "^14.32.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@ionic/core": "^4.7.4",
     "@stencil/core": "^1.2.5",
