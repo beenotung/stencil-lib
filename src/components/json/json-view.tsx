@@ -1,6 +1,14 @@
 import { h } from '@stencil/core';
 import { VNode } from '@stencil/core/dist/declarations';
-import { formatter, Style, VNodeKeys } from './json-common';
+import { Style, VNodeKeys } from './json-common';
+
+/**
+ * can be customized by consumer
+ * */
+export let formatter = {
+  date: (date: Date) => date.toLocaleString(),
+  number: (number: number) => number.toLocaleString(),
+};
 
 /**
  * supported data type:

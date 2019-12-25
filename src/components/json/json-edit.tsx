@@ -2,12 +2,57 @@ import { h } from '@stencil/core';
 import { VNode } from '@stencil/core/dist/declarations';
 import { Style, VNodeKeys } from './json-common';
 
+export type PrecisionType =
+  | 'minutes'
+  | 'seconds'
+  | 'milliseconds'
+  ;
+export let editor = {
+  precision: 'minutes' as PrecisionType,
+};
+
 export function isDateTimeSupported(): boolean {
   const input = document.createElement('input');
   const value = 'a';
   input.setAttribute('type', 'datetime-local');
   input.setAttribute('value', value);
   return (input.value !== value);
+}
+
+function d2(x: number): string {
+  if (x < 10) {
+    return '0' + x;
+  }
+  return x.toString();
+}
+
+function d3(x: number): string {
+  if (x < 10) {
+    return '0' + x;
+  }
+  if (x < 100) {
+    return '00' + x;
+  }
+  return x.toString();
+}
+
+// input[type=date].value string format in local timezone
+function dateString(date: Date): string {
+  return `${date.getFullYear()}-${d2(date.getMonth() + 1)}-${d2(date.getDate())}`;
+}
+
+// input[type=time].value string format in local timezone
+function timeString(date: Date): string {
+  let timeStr = `${d2(date.getHours())}:${d2(date.getMinutes())}`;
+  switch (editor.precision) {
+    case 'seconds':
+    case 'milliseconds':
+      timeStr += ':' + d2(date.getSeconds());
+      if (editor.precision === 'milliseconds') {
+        timeStr += '.' + d3(date.getMilliseconds());
+      }
+  }
+  return timeStr;
 }
 
 /**
@@ -28,8 +73,6 @@ export function isDateTimeSupported(): boolean {
  *   + VNode
  *   + object
  *
- * TODO to use date and time as fallback when datetime-local is not supported
- *
  * TODO config number step (int or float)
  *
  * TODO support to change data type (e.g. from null or undefined to array)
@@ -37,7 +80,7 @@ export function isDateTimeSupported(): boolean {
  * TODO support to add/delete element (e.g. for Map, Set, Array, Object)
  *
  * */
-export const EditableJsonView = (props: {
+export const JsonEdit = (props: {
 
   /* same as JsonView */
 
@@ -80,12 +123,61 @@ export const EditableJsonView = (props: {
     return <span style={props.style}>{string}</span>;
   }
 
-  function date(date: Date, update: (ev: Event, value: Date | null) => void) {
+  function date(time: Date, update: (ev: Event, value: Date | null) => void) {
+    if ('custom') {
+      // in local timezone
+      // let year: number = time.getFullYear();
+      // let month: number = time.getMonth() + 1;
+      // let date: number = time.getDate();
+      // let hours: number = time.getHours();
+      // let minutes: number = time.getMinutes();
+      // let seconds: number = time.getSeconds();
+      // let ms: number = time.getMilliseconds();
+      const dateStr = dateString(time);
+      const timeStr = timeString(time);
+      return [
+        <input
+          name={props.name}
+          type={'date'}
+          value={dateStr}
+          onChange={ev => {
+            const value = (ev.target as HTMLInputElement).value;
+            if (value) {
+              time = new Date(value + ' ' + timeStr);
+            } else {
+              // not date but still has time
+              const input = document.createElement('input');
+              input.type = 'time';
+              input.value = timeStr;
+              time = input.valueAsDate!;
+            }
+            console.log('new value:', time);
+            update(ev, time);
+          }}
+        />,
+        <input
+          name={props.name}
+          type={'time'}
+          value={timeStr}
+          onChange={ev => {
+            const value = (ev.target as HTMLInputElement).value;
+            if (value) {
+              time = new Date(dateStr + ' ' + value);
+            } else {
+              // update time but still has date
+              time = new Date(dateStr);
+            }
+            console.log('new value:', time);
+            update(ev, time);
+          }}
+        />,
+      ];
+    }
     return <input
       name={props.name}
       type='datetime-local'
-      value={date.toISOString()}
-      onChange={ev => update(ev, (ev.target as HTMLInputElement).valueAsDate)}
+      value={time.toLocaleString()}
+      onChange={ev => update(ev, new Date((ev.target as HTMLInputElement).valueAsNumber))}
     />;
   }
 
@@ -103,7 +195,7 @@ export const EditableJsonView = (props: {
       case 'number': {
         const name = (props.name || '').toLocaleLowerCase();
         if (name.includes('time') || name.includes('date')) {
-          return date(new Date(data), (ev, date) => update(ev, date?.getTime()));
+          return date(new Date(data), (ev, date) => update(ev, date && date.getTime() ));
         }
         return <input
           name={props.name}
@@ -153,7 +245,7 @@ export const EditableJsonView = (props: {
         if (data instanceof Set) {
           const set = data;
           return <ul>{Array.from(data).map(x => <li>
-            <EditableJsonView
+            <JsonEdit
               {...props}
               data={x}
               parent={data}
@@ -167,7 +259,7 @@ export const EditableJsonView = (props: {
           const map = data;
           return <table style={props.style}>
             <tbody>{Array.from(data.entries()).map(([key, value]) => <tr>
-              <td><EditableJsonView
+              <td><JsonEdit
                 {...props}
                 data={key}
                 parent={data}
@@ -177,7 +269,7 @@ export const EditableJsonView = (props: {
                 }}
               /></td>
               <td>=></td>
-              <td><EditableJsonView
+              <td><JsonEdit
                 {...props}
                 data={value}
                 name={key}
@@ -187,7 +279,7 @@ export const EditableJsonView = (props: {
           </table>;
         }
         if (Array.isArray(data)) {
-          return <ol>{data.map((x, i) => <li><EditableJsonView
+          return <ol>{data.map((x, i) => <li><JsonEdit
             {...props}
             data={x}
             parent={data}
@@ -203,7 +295,7 @@ export const EditableJsonView = (props: {
             Object.entries(data).map(([key, value]) => <tr>
               <td>{str(key)}</td>
               <td>:</td>
-              <td><EditableJsonView
+              <td><JsonEdit
                 parent={data}
                 name={key}
                 data={value}
@@ -223,3 +315,7 @@ export const EditableJsonView = (props: {
   })();
   return typeof res === 'string' ? str(res) : res;
 };
+/**
+ * @deprecated rename into JsonEdit
+ * */
+export let EditableJsonView = JsonEdit;

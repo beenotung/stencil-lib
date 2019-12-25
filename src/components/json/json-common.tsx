@@ -1,13 +1,6 @@
 import { h } from '@stencil/core';
 import { VNode } from '@stencil/core/dist/declarations';
 
-/**
- * can be customized by consumer
- * */
-export let formatter = {
-  date: (date: Date) => date.toLocaleString(),
-  number: (number: number) => number.toLocaleString(),
-};
 export type Style = { [key: string]: string };
 
 export let VNodeKeys = Object.keys(<div/>);
