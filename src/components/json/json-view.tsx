@@ -31,7 +31,6 @@ export let formatter = {
 export const JsonView = (props: {
   data: any,
   name?: string
-  parent?: any
   style?: Style
   /**
    * override the style on supplied VNode (in data) or not
@@ -80,21 +79,21 @@ export const JsonView = (props: {
         }
         if (data instanceof Set) {
           return <ul style={props.style}>{Array.from(data).map(x => <li>
-            <JsonView {...props} data={x} parent={data}/>
+            <JsonView {...props} data={x} />
           </li>)}</ul>;
         }
         if (data instanceof Map) {
           return <table style={props.style}>
             <tbody>{Array.from(data.entries()).map(([key, value]) => <tr>
-              <td><JsonView {...props} data={key} parent={data}/></td>
+              <td><JsonView {...props} data={key} /></td>
               <td>=></td>
-              <td><JsonView {...props} data={value} name={key} parent={data}/></td>
+              <td><JsonView {...props} data={value} name={key} /></td>
             </tr>)}</tbody>
           </table>;
         }
         if (Array.isArray(data)) {
           return <ol style={props.style}>{data.map(x => <li>
-            <JsonView {...props} data={x} parent={data}/>
+            <JsonView {...props} data={x} />
           </li>)}</ol>;
         }
         if (!props.preserveVNode && VNodeKeys.every(key => key in data)) {
@@ -112,7 +111,7 @@ export const JsonView = (props: {
         return <table style={props.style}>{
           Object.entries(data).map(([key, value]) => <tr>
             <td>{str(key)}:</td>
-            <td><JsonView {...props} data={value} name={key} parent={data}/></td>
+            <td><JsonView {...props} data={value} name={key} /></td>
           </tr>)
         }</table>;
       default: {
