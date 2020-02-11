@@ -85,7 +85,6 @@ export function getUpdateValue<T>(
   }
   const target = event.target as HTMLInputElement;
   const value = target.value;
-  type = type || 'text'; // assign default value
   switch (type) {
     case 'date':
       // YYYY-MM-DD
@@ -99,6 +98,7 @@ export function getUpdateValue<T>(
       return (value ? +value : undefined) as any;
     case 'email':
     case 'text':
+    case undefined: // default is text
     case 'textarea':
     case 'search':
     case 'tel':
@@ -114,9 +114,6 @@ export function getUpdateValue<T>(
           type.type === 'radio')
       ) {
         return value as any;
-      }
-      if (type === undefined) {
-        return undefined;
       }
       const x: never = type;
       console.error('unknown type:', x);
