@@ -83,6 +83,7 @@ export function getUpdateValue<T>(
   }
   const target = event.target as HTMLInputElement;
   const value = target.value;
+  type = type || 'text'; // assign default value
   switch (type) {
     case 'date':
       // YYYY-MM-DD
