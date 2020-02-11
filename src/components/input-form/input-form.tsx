@@ -1,147 +1,146 @@
 import { h } from '@stencil/core';
 import * as d from '@stencil/core/dist/declarations';
-import { getUpdateValue, InputItem as InputItemType, OptionType } from './helper';
+import { getUpdateValue, InputItem as InputItemType } from './helper';
+
+function updateItem<T>(props: {
+  item: InputItemType<T>,
+  event: Event,
+  value?: any
+  triggerRender: () => void,
+}) {
+  const { item } = props;
+  const value = ('value' in props)
+    ? props.value // use given value
+    : getUpdateValue(item.type, props.event) // extract value from event
+  ;
+  if (item.onChange) {
+    item.onChange(value, item.valueObject[item.key]);
+    requestAnimationFrame(() => props.triggerRender());
+    return;
+  }
+  item.valueObject[item.key] = value;
+  props.triggerRender();
+}
+
+function renderIonInput(label: string, input: d.VNode) {
+  return (
+    <ion-item>
+      <ion-label position='stacked'>{label}</ion-label>
+      {input}
+    </ion-item>
+  );
+}
+
+function renderInputItem<T>(props: {
+  item: InputItemType<T>,
+  triggerRender: () => void,
+}) {
+  const { item, triggerRender } = props;
+  const label = item.label;
+  switch (item.type) {
+    case 'date':
+    case 'email':
+    case 'number':
+    case 'password':
+    case 'search':
+    case 'tel':
+    case 'text':
+    case undefined: // default is text
+    case 'time':
+    case 'url':
+      return renderIonInput(label, <ion-input
+        type={item.type || 'text'}
+        placeholder={item.placeholder}
+        value={item.valueObject[item.key] as any}
+        onIonChange={event => updateItem({ item, event, triggerRender })}
+        autoCorrect={'on'}
+        autocomplete={'on'}
+        autoCapitalize={'on'}
+      />);
+    case 'datetime':
+      return renderIonInput(label, <ion-datetime
+        displayFormat='D MMM YYYY'
+        placeholder={item.placeholder}
+        onIonChange={event => updateItem({ item, event, triggerRender })}
+        min={item.min}
+        max={item.max}
+        value={item.valueObject[item.key] as any}
+      />);
+    case 'textarea':
+      return renderIonInput(label, <ion-textarea
+        placeholder={item.placeholder}
+        value={item.valueObject[item.key] as any}
+        onIonChange={event => updateItem({ item, event, triggerRender })}
+        autoGrow={true}
+        autoCorrect={'on'}
+        autoCapitalize={'on'}
+      />);
+    default:
+      if (!item.type) {
+        console.error('unknown input type:', item.type);
+        return;
+      }
+      // enum options, use radio or checkbox
+      if ( item.type.type === 'select') {
+        const{multiple, options} = item.type;
+        return renderIonInput(label, <ion-select
+          placeholder={item.placeholder}
+          value={item.valueObject[item.key]}
+          onIonChange={event => updateItem({ item, event, triggerRender })}
+          multiple={multiple}
+        >{options.map(option => <ion-select-option
+          value={option.value}
+          selected={multiple
+            ? (item.valueObject[item.key] as any as any[] || []).includes(option.value)
+            : item.valueObject[item.key] === option.value}
+        >{option.text}</ion-select-option>)}</ion-select>);
+      }
+      if ( item.type.type === 'checkbox') {
+        return <ion-list>
+          <ion-list-header>{item.label}</ion-list-header>
+          {item.type.options.map(option => <ion-item>
+            <ion-checkbox
+              slot='start'
+              onIonChange={(event: any) => updateItem({
+                item,
+                event,
+                value: option.value,
+                triggerRender: props.triggerRender,
+              })}
+              checked={((item.valueObject[item.key] as any) as any[]).includes(
+                option.value,
+              )}
+              value={option.value as any}
+            />
+            <ion-label>{option.text}</ion-label>
+          </ion-item>)}
+        </ion-list>;
+      }
+      if (item. type.type === 'radio') {
+        return <ion-radio-group
+          value={item.valueObject[item.key]}
+          onIonChange={event => updateItem({ item, event, triggerRender })}
+        >
+          <ion-list-header>
+            <ion-label>{label}</ion-label>
+          </ion-list-header>
+          {item.type.options.map(option => <ion-item>
+            <ion-label>{option.text}</ion-label>
+            <ion-radio slot='start' value={option.value}/>
+          </ion-item>)}
+        </ion-radio-group>;
+      }
+      const x: never = item.type;
+      console.error('unknown input type:', x);
+      return;
+  }
+}
 
 export const InputItem = <T, >(props: {
   item: InputItemType<T>,
   triggerRender: () => void,
 }) => {
-  const component = {
-
-    updateItem(item: InputItemType<T>, event: Event, value?: any) {
-      // check if value is given
-      if (arguments.length !== 3) {
-        // no value
-        if (!event.target) {
-          return;
-        }
-        value = getUpdateValue(item.type, event);
-      }
-      if (item.onChange) {
-        item.onChange(value, item.valueObject[item.key]);
-        requestAnimationFrame(() => props.triggerRender());
-        return;
-      }
-      item.valueObject[item.key] = value;
-      props.triggerRender();
-    },
-
-    renderIonInput(label: string, input: d.VNode) {
-      return (
-        <ion-item>
-          <ion-label position='stacked'>{label}</ion-label>
-          {input}
-        </ion-item>
-      );
-    },
-
-    /**@deprecated use ion-select with multiple attr instead */
-    renderCheckboxGroup(
-      item: InputItemType<T> & {
-        type: { type: 'select'; options: Array<OptionType<T>>; multiple: true };
-      },
-    ) {
-      return (
-        <ion-list>
-          <ion-list-header>{item.label}</ion-list-header>
-          {...item.type.options.map(option => (
-            <ion-item>
-              <ion-checkbox
-                slot='start'
-                onIonChange={(event: any) => component.updateItem(item, event, option.value)}
-                checked={((item.valueObject[item.key] as any) as any[]).includes(
-                  option.value,
-                )}
-                value={option.value as any}
-              />
-              <ion-label>{option.text}</ion-label>
-            </ion-item>
-          ))}
-        </ion-list>
-      );
-    },
-
-    renderInputItem(item: InputItemType<T>) {
-      const label = item.label;
-      const type = item.type || 'text';
-      switch (type) {
-        case 'date':
-        case 'email':
-        case 'number':
-        case 'password':
-        case 'search':
-        case 'tel':
-        case 'text':
-        case 'time':
-        case 'url':
-          return component.renderIonInput(label, <ion-input
-            type={type}
-            placeholder={item.placeholder}
-            value={item.valueObject[item.key] as any}
-            onIonChange={e => component.updateItem(item, e)}
-            autoCorrect={'on'}
-            autocomplete={'on'}
-            autoCapitalize={'on'}
-          />);
-        case 'datetime':
-          return component.renderIonInput(label, <ion-datetime
-            displayFormat='D MMM YYYY'
-            placeholder={item.placeholder}
-            onIonChange={e => component.updateItem(item, e)}
-            min={item.min}
-            max={item.max}
-            value={item.valueObject[item.key] as any}
-          />);
-        case 'textarea':
-          return component.renderIonInput(label, <ion-textarea
-            placeholder={item.placeholder}
-            value={item.valueObject[item.key] as any}
-            onIonChange={e => component.updateItem(item, e)}
-            autoGrow={true}
-            autoCorrect={'on'}
-            autoCapitalize={'on'}
-          />);
-        default:
-          // enum options, use radio or checkbox
-          if (type && type.type === 'select') {
-            return component.renderIonInput(label, <ion-select
-              placeholder={item.placeholder}
-              value={item.valueObject[item.key]}
-              onIonChange={e => component.updateItem(item, e)}
-              multiple={type.multiple}
-            >{type.options.map(option => <ion-select-option
-              value={option.value}
-              selected={type.multiple
-                ? (item.valueObject[item.key] as any as any[] || []).includes(option.value)
-                : item.valueObject[item.key] === option.value}
-            >{option.text}</ion-select-option>)}</ion-select>);
-          }
-          if (type && type.type === 'radio') {
-            return <ion-radio-group
-              value={item.valueObject[item.key]}
-              onIonChange={e => component.updateItem(item, e)}
-            >
-              <ion-list-header>
-                <ion-label>{label}</ion-label>
-              </ion-list-header>
-              {type.options.map(option => <ion-item>
-                <ion-label>{option.text}</ion-label>
-                <ion-radio slot='start' value={option.value}/>
-              </ion-item>)}
-            </ion-radio-group>;
-          }
-          const x: never = type;
-          console.error('unknown input type:', x);
-          return;
-      }
-    },
-
-    render() {
-      return component.renderInputItem(props.item);
-    },
-  };
-
-  return component.render();
+  return renderInputItem<T>(props);
 };
 
 export const InputList = <T, >(

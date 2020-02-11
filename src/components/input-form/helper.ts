@@ -28,6 +28,8 @@ export type InputType<T> =
   | 'textarea'
   // ion-select
   | { type: 'select'; options: Array<OptionType<T>>; multiple?: boolean }
+  // ion-checkbox
+  | { type: 'checkbox'; options: Array<OptionType<T>> }
   // ion-radio-group
   | { type: 'radio'; options: Array<OptionType<T>> };
 
@@ -105,7 +107,12 @@ export function getUpdateValue<T>(
       return value as any;
     default:
       // enum options, use radio or checkbox
-      if (type && (type.type === 'select' || type.type === 'radio')) {
+      if (
+        type &&
+        (type.type === 'select' ||
+          type.type === 'checkbox' ||
+          type.type === 'radio')
+      ) {
         return value as any;
       }
       if (type === undefined) {
