@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
+    "esModuleInterop": true,
     "declaration": true,
     "experimentalDecorators": true,
     "strict": true,
