@@ -46,14 +46,19 @@ export type InputItemPart<T, K extends keyof T = keyof T> = {
   onChange?: (newValue: T[K], oldValue: T[K]) => void;
 };
 
-export type InputItem<T, K extends keyof T = keyof T> = InputItemPart<T, K> & {
+export type InputItemOption<T, K extends keyof T = keyof T> = InputItemPart<
+  T,
+  K
+> & {
   valueObject: T;
 };
+/**@deprecated renamed to InputItemOption to resolve name conflict*/
+export type InputItem<T, K extends keyof T = keyof T> = InputItemOption<T, K>;
 
 export function makeInputItems<T>(
   valueObject: T,
   items: Array<'br' | InputItemPart<T> | d.VNode | d.VNode[]>,
-): Array<'br' | InputItem<T> | d.VNode | d.VNode[]> {
+): Array<'br' | InputItemOption<T> | d.VNode | d.VNode[]> {
   return items.map(item => {
     if (item === 'br') {
       return item;

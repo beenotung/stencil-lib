@@ -1,9 +1,9 @@
 import { h } from '@stencil/core';
 import * as d from '@stencil/core/dist/declarations';
-import { getUpdateValue, InputItem as InputItemType } from './helper';
+import { getUpdateValue, InputItemOption } from './helper';
 
 function updateItem<T>(props: {
-  item: InputItemType<T>,
+  item: InputItemOption<T>,
   event: Event,
   value?: any
   triggerRender: () => void,
@@ -32,7 +32,7 @@ function renderIonInput(label: string, input: d.VNode) {
 }
 
 function renderInputItem<T>(props: {
-  item: InputItemType<T>,
+  item: InputItemOption<T>,
   triggerRender: () => void,
 }) {
   const { item, triggerRender } = props;
@@ -137,7 +137,7 @@ function renderInputItem<T>(props: {
 }
 
 export const InputItem = <T, >(props: {
-  item: InputItemType<T>,
+  item: InputItemOption<T>,
   triggerRender: () => void,
 }) => {
   return renderInputItem<T>(props);
@@ -145,7 +145,7 @@ export const InputItem = <T, >(props: {
 
 export const InputList = <T, >(
   props: {
-    items: Array<'br' | InputItemType<T> | d.VNode | (d.VNode[])>,
+    items: Array<'br' | InputItemOption<T> | d.VNode | (d.VNode[])>,
     triggerRender: () => void,
   },
 ) => {
@@ -158,7 +158,7 @@ export const InputList = <T, >(
         if (Array.isArray(item)) {
           return item as d.VNode[];
         }
-        const inputItem = item as InputItemType<T>;
+        const inputItem = item as InputItemOption<T>;
         if (typeof inputItem !== 'object') {
           // maybe string?
           return item;
