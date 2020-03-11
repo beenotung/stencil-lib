@@ -1,5 +1,6 @@
 import { h } from '@stencil/core';
-import { ChildType, VNode } from '@stencil/core/dist/declarations';
+import { VNode } from '@stencil/core/internal/stencil-core';
+import { ChildType } from '../../helper-types';
 
 export const IonPageDefaultProp = {
   menu: false,

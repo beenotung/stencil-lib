@@ -1,5 +1,5 @@
 import { h } from '@stencil/core';
-import { VNode } from '@stencil/core/dist/declarations';
+import { VNode } from '@stencil/core/internal/stencil-core';
 
 export type Style = { [key: string]: string };
 

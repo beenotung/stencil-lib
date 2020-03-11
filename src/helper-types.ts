@@ -1,4 +1,5 @@
-import { ChildType } from '@stencil/core/dist/declarations';
+import { VNode } from '@stencil/core/internal/stencil-core';
+export type ChildType = VNode | number | string;
 
 type OneOrList<T> = T[] | T;
 type ChildrenTypeSync = OneOrList<undefined | ChildType>;
