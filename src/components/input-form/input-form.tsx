@@ -49,6 +49,7 @@ function renderInputItem<T>(props: {
     case 'time':
     case 'url':
       return renderIonInput(label, <ion-input
+        readonly={item.readonly}
         type={item.type || 'text'}
         placeholder={item.placeholder}
         value={item.valueObject[item.key] as any}
@@ -59,6 +60,7 @@ function renderInputItem<T>(props: {
       />);
     case 'datetime':
       return renderIonInput(label, <ion-datetime
+        readonly={item.readonly}
         displayFormat='D MMM YYYY'
         placeholder={item.placeholder}
         onIonChange={event => updateItem({ item, event, triggerRender })}
@@ -68,6 +70,7 @@ function renderInputItem<T>(props: {
       />);
     case 'textarea':
       return renderIonInput(label, <ion-textarea
+        readonly={item.readonly}
         placeholder={item.placeholder}
         value={item.valueObject[item.key] as any}
         onIonChange={event => updateItem({ item, event, triggerRender })}
@@ -81,9 +84,10 @@ function renderInputItem<T>(props: {
         return;
       }
       // enum options, use radio or checkbox
-      if ( item.type.type === 'select') {
-        const{multiple, options} = item.type;
+      if (item.type.type === 'select') {
+        const { multiple, options } = item.type;
         return renderIonInput(label, <ion-select
+          disabled={item.readonly}
           placeholder={item.placeholder}
           value={item.valueObject[item.key]}
           onIonChange={event => updateItem({ item, event, triggerRender })}
@@ -95,11 +99,12 @@ function renderInputItem<T>(props: {
             : item.valueObject[item.key] === option.value}
         >{option.text}</ion-select-option>)}</ion-select>);
       }
-      if ( item.type.type === 'checkbox') {
+      if (item.type.type === 'checkbox') {
         return <ion-list>
           <ion-list-header>{item.label}</ion-list-header>
           {item.type.options.map(option => <ion-item>
             <ion-checkbox
+              disabled={item.readonly}
               slot='start'
               onIonChange={(event: any) => updateItem({
                 item,
@@ -116,7 +121,7 @@ function renderInputItem<T>(props: {
           </ion-item>)}
         </ion-list>;
       }
-      if (item. type.type === 'radio') {
+      if (item.type.type === 'radio') {
         return <ion-radio-group
           value={item.valueObject[item.key]}
           onIonChange={event => updateItem({ item, event, triggerRender })}
@@ -126,7 +131,7 @@ function renderInputItem<T>(props: {
           </ion-list-header>
           {item.type.options.map(option => <ion-item>
             <ion-label>{option.text}</ion-label>
-            <ion-radio slot='start' value={option.value}/>
+            <ion-radio disabled={item.readonly} slot='start' value={option.value}/>
           </ion-item>)}
         </ion-radio-group>;
       }
