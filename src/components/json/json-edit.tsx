@@ -1,5 +1,5 @@
 import { h } from '@stencil/core';
-import { VNode } from '@stencil/core/dist/declarations';
+import { VNode } from '@stencil/core/internal/stencil-core';
 import { Style, VNodeKeys } from './json-common';
 
 export type PrecisionType =

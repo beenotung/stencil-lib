@@ -1,4 +1,4 @@
-import * as d from '@stencil/core/dist/declarations';
+import * as d from '@stencil/core/internal/stencil-core';
 
 export type OptionType<T = never> = { text: string; value: T };
 

@@ -1,5 +1,5 @@
 import { h } from '@stencil/core';
-import * as d from '@stencil/core/dist/declarations';
+import * as d from '@stencil/core/internal/stencil-core';
 import { getUpdateValue, InputItemOption } from './helper';
 
 function updateItem<T>(props: {
