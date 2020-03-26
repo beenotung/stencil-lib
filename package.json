@@ -15,7 +15,7 @@
     "build": "tsc",
     "postbuild": "node mk-package.js > dist/package.json",
     "test": "npm run format && npm run build",
-    "prepublishOnly": "npm run rawtest && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "husky": {
     "hook": {
