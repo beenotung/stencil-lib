@@ -1,6 +1,6 @@
 import { h } from '@stencil/core';
 import { VNode } from '@stencil/core/internal/stencil-core';
-import { Style, VNodeKeys } from './json-common';
+import { isVNode, Style } from './json-common';
 
 export type PrecisionType =
   | 'minutes'
@@ -286,7 +286,7 @@ export const JsonEdit = (props: {
             updateValue={value => data[i] = value}
           /></li>)}</ol>;
         }
-        if (!props.preserveVNode && VNodeKeys.every(key => key in data)) {
+        if (!props.preserveVNode && isVNode(data) ) {
           // TODO support inline html edit for VNode
           // return data;
         }

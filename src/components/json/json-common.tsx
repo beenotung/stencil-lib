@@ -3,9 +3,30 @@ import { VNode } from '@stencil/core/internal/stencil-core';
 
 export type Style = { [key: string]: string };
 
-export let VNodeKeys = Object.keys(<div/>);
+function getVNodeKeys() {
+  const e = <div/>;
+  if (e) {
+    return Object.keys(e);
+  }
+  // e.g. when the runtime is not inside stencil app
+  return [
+    '$flags$',
+    '$tag$',
+    '$text$',
+    '$elm$',
+    '$children$',
+    '$attrs$',
+    '$key$',
+    '$name$',
+  ];
+}
+
+let VNodeKeys: string[] | undefined;
 
 export function isVNode(o: VNode): boolean {
+  if (!VNodeKeys) {
+    VNodeKeys = getVNodeKeys();
+  }
   return typeof o === 'object' && o && VNodeKeys.every(key => key in o);
 }
 

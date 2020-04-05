@@ -1,6 +1,6 @@
 import { h } from '@stencil/core';
 import { VNode } from '@stencil/core/internal/stencil-core';
-import { Style, VNodeKeys } from './json-common';
+import { isVNode, Style } from './json-common';
 
 /**
  * can be customized by consumer
@@ -96,7 +96,7 @@ export const JsonView = (props: {
             <JsonView {...props} data={x} />
           </li>)}</ol>;
         }
-        if (!props.preserveVNode && VNodeKeys.every(key => key in data)) {
+        if (!props.preserveVNode && isVNode(data) ) {
           if (props.overrideStyle) {
             if (!data.$attrs$) {
               data.$attrs$ = {};
