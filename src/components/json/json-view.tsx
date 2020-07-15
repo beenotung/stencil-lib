@@ -29,6 +29,8 @@ export let formatter = {
  *   + object
  * */
 export const JsonView = (props: {
+  class?: string
+  hidden?: boolean
   data: any,
   name?: string
   style?: Style
@@ -83,7 +85,7 @@ export const JsonView = (props: {
           </li>)}</ul>;
         }
         if (data instanceof Map) {
-          return <table style={props.style}>
+          return <table style={props.style} class={props.class} hidden={props.hidden}>
             <tbody>{Array.from(data.entries()).map(([key, value]) => <tr>
               <td><JsonView {...props} data={key} /></td>
               <td>=></td>
@@ -108,7 +110,7 @@ export const JsonView = (props: {
           }
           return data;
         }
-        return <table style={props.style}>{
+        return <table style={props.style} class={props.class} hidden={props.hidden}> {
           Object.entries(data).map(([key, value]) => <tr>
             <td>{str(key)}:</td>
             <td><JsonView {...props} data={value} name={key} /></td>

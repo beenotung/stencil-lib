@@ -84,6 +84,8 @@ export const JsonEdit = (props: {
 
   /* same as JsonView */
 
+  class?: string
+  hidden?: boolean
   data: any,
   name?: string
   parent?: any
@@ -257,7 +259,7 @@ export const JsonEdit = (props: {
         }
         if (data instanceof Map) {
           const map = data;
-          return <table style={props.style}>
+          return <table style={props.style} class={props.class} hidden={props.hidden}>
             <tbody>{Array.from(data.entries()).map(([key, value]) => <tr>
               <td><JsonEdit
                 {...props}
@@ -290,7 +292,7 @@ export const JsonEdit = (props: {
           // TODO support inline html edit for VNode
           // return data;
         }
-        return <table style={props.style}>
+        return <table style={props.style} class={props.class} hidden={props.hidden}>
           <tbody>{
             Object.entries(data).map(([key, value]) => <tr>
               <td>{str(key)}</td>
