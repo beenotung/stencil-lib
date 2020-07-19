@@ -22,10 +22,13 @@ function updateItem<T>(props: {
   props.triggerRender();
 }
 
-function renderIonInput(label: string, input: d.VNode) {
+function renderIonInput(item: {
+  itemClass?: string
+  label: string,
+}, input: d.VNode) {
   return (
-    <ion-item>
-      <ion-label position='stacked'>{label}</ion-label>
+    <ion-item class={item.itemClass}>
+      <ion-label position='stacked'>{item.label}</ion-label>
       {input}
     </ion-item>
   );
@@ -48,7 +51,7 @@ function renderInputItem<T>(props: {
     case undefined: // default is text
     case 'time':
     case 'url':
-      return renderIonInput(label, <ion-input
+      return renderIonInput(item, <ion-input
         readonly={item.readonly}
         type={item.type || 'text'}
         placeholder={item.placeholder}
@@ -59,7 +62,7 @@ function renderInputItem<T>(props: {
         autoCapitalize={'on'}
       />);
     case 'datetime':
-      return renderIonInput(label, <ion-datetime
+      return renderIonInput(item, <ion-datetime
         readonly={item.readonly}
         displayFormat='D MMM YYYY'
         placeholder={item.placeholder}
@@ -69,7 +72,7 @@ function renderInputItem<T>(props: {
         value={item.valueObject[item.key] as any}
       />);
     case 'textarea':
-      return renderIonInput(label, <ion-textarea
+      return renderIonInput(item, <ion-textarea
         readonly={item.readonly}
         placeholder={item.placeholder}
         value={item.valueObject[item.key] as any}
@@ -86,7 +89,7 @@ function renderInputItem<T>(props: {
       // enum options, use radio or checkbox
       if (item.type.type === 'select') {
         const { multiple, options } = item.type;
-        return renderIonInput(label, <ion-select
+        return renderIonInput(item, <ion-select
           disabled={item.readonly}
           placeholder={item.placeholder}
           value={item.valueObject[item.key]}

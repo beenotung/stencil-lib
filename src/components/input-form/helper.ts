@@ -45,6 +45,7 @@ export type InputItemPart<T, K extends keyof T = keyof T> = {
   // only implemented for checkbox group
   onChange?: (newValue: T[K], oldValue: T[K]) => void;
   readonly?: boolean;
+  itemClass?: string;
 };
 
 export type InputItemOption<T, K extends keyof T = keyof T> = InputItemPart<
