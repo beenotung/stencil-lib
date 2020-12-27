@@ -2,9 +2,7 @@ import { toastController, ToastOptions } from '@ionic/core';
 
 export async function showToast(options: ToastOptions) {
   options = {
-    duration: 5000,
-    showCloseButton: true,
-    animated: true,
+    ...showToast.defaultOptions,
     ...options,
   };
   try {
@@ -14,4 +12,12 @@ export async function showToast(options: ToastOptions) {
     console.error('toast web component is not supported');
     alert(options.message);
   }
+}
+
+export namespace showToast {
+  export let defaultOptions: ToastOptions = {
+    duration: 5000,
+    showCloseButton: true,
+    animated: true,
+  };
 }
