@@ -2,7 +2,11 @@
   "name": "stencil-lib",
   "version": "0.11.0",
   "description": "Utility Library when using Stencil with Ionic core for PWA",
-  "keywords": [],
+  "keywords": [
+    "Ionic",
+    "Stencil",
+    "Utils"
+  ],
   "author": "Beeno Tung <aabbcc1241@yahoo.com.hk> (https://beeno-tung.surge.sh)",
   "license": "BSD-2-Clause",
   "main": "dist/index.js",
