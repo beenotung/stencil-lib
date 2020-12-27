@@ -1,6 +1,6 @@
 {
   "name": "stencil-lib",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Utility Library when using Stencil with Ionic core for PWA",
   "keywords": [
     "Ionic",
